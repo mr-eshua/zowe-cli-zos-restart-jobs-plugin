@@ -1,7 +1,7 @@
 import { ICommandHandler, IHandlerParameters } from "@zowe/imperative";
 import { GetJobs, IJob, ZosmfSession } from "@zowe/cli";
 
-export default class JobHandler implements ICommandHandler {
+export default class JesHandler implements ICommandHandler {
     public async process(commandParameters: IHandlerParameters): Promise<void> {
         // Force yargs `jobid` parameter to be a string
         const jobid: string = commandParameters.arguments.jobid + "";
