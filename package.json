@@ -38,17 +38,15 @@
     "configurationModule": "lib/imperative.js"
   },
   "peerDependencies": {
-    "@zowe/cli": "^5.14.2",
-    "@zowe/imperative": "^4.2.1"
+    "@zowe/cli": "^6.5.0",
+    "@zowe/imperative": "^4.4.4"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
     "@types/jest": "^20.0.5",
     "@types/node": "^8.0.0",
     "@types/yargs": "8.0.2",
-    "@zowe/cli": "^6.1.0",
+    "@zowe/cli": "^6.5.0",
     "env-cmd": "^8.0.2",
-    "fs-extra": "^5.0.0",
     "jest": "^24.3.1",
     "jest-cli": "^24.3.1",
     "jest-environment-node": "^24.3.1",
