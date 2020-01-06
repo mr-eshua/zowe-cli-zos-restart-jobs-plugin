@@ -32,7 +32,9 @@
     "test:system": "env-cmd __tests__/__resources__/env/system.env jest .*/__system__/.* --coverage false",
     "test:integration": "env-cmd __tests__/__resources__/env/integration.env jest .*/__integration__/.* --coverage false",
     "test:unit": "env-cmd __tests__/__resources__/env/unit.env jest --coverage --testPathIgnorePatterns \".*/__system__|__integration__/.*\"",
-    "installPlugin": "npm install && npm run clean && npm run build && zowe plugins install ."
+    "install-plugin": "npm i && npm run clean && npm run build && zowe plugins install .",
+    "exec-plugin": "zowe zos-restart-jobs restart jes",
+    "exec-zowe": "zowe"
   },
   "imperative": {
     "configurationModule": "lib/imperative.js"
