@@ -1,9 +1,13 @@
-import { ICommandHandler, IHandlerParameters, ImperativeError } from "@zowe/imperative";
-import { GetJobs, SubmitJobs, IJob, ZosmfSession } from "@zowe/cli";
+import { ICommandHandler, IHandlerParameters, ITaskWithStatus, TaskProgress, TaskStage } from "@zowe/imperative";
+import { ZosmfSession } from "@zowe/cli";
+import { RestartJobs } from "../../../api/RestartJobs";
+import { IRestartParms } from "../../../api/doc/input/IRestartParms";
+import { isNullOrUndefined } from "util";
 
 export default class JesHandler implements ICommandHandler {
 
     public async process(commandParameters: IHandlerParameters): Promise<void> {
+
         // Force yargs `jobid` and `stepname` parameters to be a string
         const jobid: string = commandParameters.arguments.jobid + "";
         const stepname: string = commandParameters.arguments.stepname + "";
@@ -11,89 +15,68 @@ export default class JesHandler implements ICommandHandler {
         // Create session from arguments
         const session = ZosmfSession.createBasicZosmfSessionFromArguments(commandParameters.arguments);
 
-        // Get the job details
-        const job: IJob = await GetJobs.getJob(session, jobid);
+        const status: ITaskWithStatus = {
+            statusMessage: "Restarting job",
+            percentComplete: TaskProgress.TEN_PERCENT,
+            stageName: TaskStage.IN_PROGRESS
+        };
 
-        // TODO: check job status for failed
+        // Save the needed parameters for convenience
+        const parms: IRestartParms = {
+            viewAllSpoolContent: commandParameters.arguments.viewAllSpoolContent,
+            directory: commandParameters.arguments.directory,
+            extension: commandParameters.arguments.extension,
+            waitForActive: commandParameters.arguments.waitForActive,
+            waitForOutput: commandParameters.arguments.waitForOutput,
+            task: status
+        };
 
-        // Get JCL for acquired job
-        const jobJcl: string = await GetJobs.getJclForJob(session, job);
+        commandParameters.response.progress.startBar({task: status});
 
-        // for (const line of jobJcl.split("\n")) {
-        //     commandParameters.response.console.log(line);
-        // }
+        let apiObj: any;    // API Object to set in the command JSON response
+        let spoolFilesResponse: any; // Response from view all spool content option
+        let directory: string = commandParameters.arguments.directory; // Path where to download spool content
 
-        // Prepare new JCL, which will be restarted from specified step name
-        const newJobJcl: string = this.transformToRestartJobJcl(jobJcl, jobid, stepname);
+        apiObj = await RestartJobs.restartFailedJobWithParms(session, jobid, stepname, parms);
+        if (parms.viewAllSpoolContent) {
+            spoolFilesResponse = apiObj;
+        }
 
-        // commandParameters.response.console.log("");
+        // Print the response to the command
+        if (isNullOrUndefined(spoolFilesResponse)) {
+            commandParameters.response.format.output({
+                fields: ["jobid", "retcode", "jobname", "status"],
+                output: apiObj,
+                format: "object"
+            });
+            // Set the API object to the correct
+            commandParameters.response.data.setObj(apiObj);
 
-        // for (const line of newJobJcl.split("\n")) {
-        //     commandParameters.response.console.log(line);
-        // }
-
-        // Re-submit the updated job
-        // TODO: Add support of formatting and submit params?
-        await SubmitJobs.submitJcl(session, newJobJcl);
-
-        const message: string = `Successfully restarted job ${job.jobname} (${jobid}) from step ${stepname}`;
-
-        // Print message to console
-        commandParameters.response.console.log(message);
-
-        // Return as an object when using --response-format-json
-        commandParameters.response.data.setMessage(message);
-        commandParameters.response.data.setObj(job);
-    }
-
-    private transformToRestartJobJcl(jobJcl: string, jobid: string, stepname: string): string {
-        const newJclLines: string[] = [];
-        let restartParamLine: string = `//             RESTART=(${stepname.toUpperCase()})`;
-        let isStepFound: boolean = false;
-        for (const line of jobJcl.split("\n")) {
-            const upperCasedLine = line.toUpperCase();
-
-            // Do not try to process comment lines
-            if (!upperCasedLine.startsWith("//*")) {
-
-                if (upperCasedLine.indexOf("JOB") >= 0) {
-
-                    // Remove redundant `jobid` at the end of JOB statement and odd white spaces
-                    let modifiedJobLine: string = line.replace(jobid, "").trim();
-
-                    // Check if JOB statement is multi-line
-                    if (modifiedJobLine.endsWith(",")) {
-                        restartParamLine += ",";
-                    }
-                    else {
-                        modifiedJobLine += ",";
-                    }
-
-                    // Push RESTART= param always on the second line after JOB statement
-                    // This converts JOB statement to multi-line if it was not OR
-                    // just add another line to already multi-lined JOB statement
-                    newJclLines.push(modifiedJobLine);
-                    newJclLines.push(restartParamLine);
-                    continue;
+            // Print data from spool content
+        } else {
+            for (const spoolFile of spoolFilesResponse) {
+                if (!isNullOrUndefined(spoolFile.procName) && spoolFile.procName.length > 0) {
+                    commandParameters.response.console.log("Spool file: %s (ID #%d, Step: %s, ProcStep: %s)",
+                                                           spoolFile.ddName, spoolFile.id, spoolFile.stepName,
+                                                           spoolFile.procName);
+                } else {
+                    commandParameters.response.console.log("Spool file: %s (ID #%d, Step: %s)",
+                                                           spoolFile.ddName, spoolFile.id, spoolFile.stepName);
                 }
-
-                // Check if specified step name really exists in JCL
-                if (upperCasedLine.indexOf("EXEC") >= 0 &&
-                        upperCasedLine.startsWith(`//${stepname.toUpperCase()}`)) {
-                    isStepFound = true;
-                }
+                commandParameters.response.console.log(spoolFile.data);
             }
 
-            newJclLines.push(line);
+            // Set the API object to the correct
+            commandParameters.response.data.setObj(spoolFilesResponse);
         }
 
-        if (!isStepFound) {
-            throw new ImperativeError({
-                msg: `Step name ${stepname} is not found in a job with jobid ${jobid}`
-            });
+        // Print path where spool content was downloaded
+        if (!isNullOrUndefined(directory) && isNullOrUndefined(spoolFilesResponse)) {
+            directory = directory.includes("./") ? directory : `./${directory}`;
+            commandParameters.response.console.log(`Successfully downloaded output to ${directory}/${apiObj.jobid}`);
         }
-
-        return newJclLines.join("\n");
+        commandParameters.response.progress.endBar();
+        commandParameters.response.data.setMessage(`Restarted JCL with jobid "${jobid}" starting from step "${stepname}"`);
     }
 
 }
