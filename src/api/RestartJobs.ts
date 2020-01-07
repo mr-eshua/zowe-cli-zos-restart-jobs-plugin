@@ -1,5 +1,5 @@
 import { IJob, GetJobs, SubmitJobs } from "@zowe/cli";
-import { AbstractSession, ImperativeError } from "@zowe/imperative";
+import { AbstractSession, ImperativeError, ImperativeExpect } from "@zowe/imperative";
 
 export class RestartJobs {
 
@@ -66,11 +66,8 @@ export class RestartJobs {
         // Get the job details
         const job: IJob = await GetJobs.getJob(session, jobid);
 
-        if (job.retcode === "CC 0000") {
-            throw new ImperativeError({
-                msg: errorMessagePrefix + "Job status is successful, failed is required"
-            });
-        }
+        ImperativeExpect.toNotBeEqual(job.retcode, "CC 0000",
+                                      errorMessagePrefix + "Job status is successful, failed is required");
 
         // Get the restart job JCL
         const restartJobJcl: string = await this.getRestartJclForJob(session, stepname, job);
