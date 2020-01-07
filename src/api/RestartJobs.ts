@@ -59,10 +59,18 @@ export class RestartJobs {
     }
 
     public static async restartFailedJob(session: AbstractSession, jobid: string, stepname: string) {
+
+        const errorMessagePrefix: string =
+            `Restarting job with id ${jobid} on ${session.ISession.hostname}:${session.ISession.port} failed: `;
+
         // Get the job details
         const job: IJob = await GetJobs.getJob(session, jobid);
 
-        // TODO: check job status for failed
+        if (job.retcode === "CC 0000") {
+            throw new ImperativeError({
+                msg: errorMessagePrefix + "Job status is successful, failed is required"
+            });
+        }
 
         // Get the restart job JCL
         const restartJobJcl: string = await this.getRestartJclForJob(session, stepname, job);
