@@ -1,5 +1,6 @@
 import { IJob, GetJobs, SubmitJobs, JOB_STATUS } from "@zowe/cli";
 import { AbstractSession, ImperativeError, ImperativeExpect } from "@zowe/imperative";
+import { IRestartParms } from "./doc/input/IRestartParms";
 
 export class RestartJobs {
 
@@ -60,6 +61,36 @@ export class RestartJobs {
 
     public static async restartFailedJob(session: AbstractSession, jobid: string, stepname: string) {
 
+        // Get the restart job JCL
+        const restartJobJcl: string = await this.getFailedJobRestartJcl(session, jobid, stepname);
+
+        // Re-submit restart job JCL
+        return SubmitJobs.submitJcl(session, restartJobJcl);
+    }
+
+    public static async restartFailedJobWithParms(session: AbstractSession, jobid: string, stepname: string,
+                                                  parms: IRestartParms) {
+
+        // Get the restart job JCL
+        const restartJobJcl: string = await this.getFailedJobRestartJcl(session, jobid, stepname);
+
+        // Transform into ISubmitParms structure
+        const submitParms = {
+            jclSource: undefined as any,
+            viewAllSpoolContent: parms.viewAllSpoolContent,
+            directory: parms.directory,
+            extension: parms.extension,
+            waitForActive: parms.waitForActive,
+            waitForOutput: parms.waitForOutput,
+            task: parms.task
+        };
+
+        // Re-submit restart job JCL
+        return SubmitJobs.submitJclString(session, restartJobJcl, submitParms);
+    }
+
+
+    public static async getFailedJobRestartJcl(session: AbstractSession, jobid: string, stepname: string) {
         const errorMessagePrefix: string =
             `Restarting job with id ${jobid} on ${session.ISession.hostname}:${session.ISession.port} failed: `;
 
@@ -72,11 +103,7 @@ export class RestartJobs {
                                       errorMessagePrefix + "Job status is successful, failed is required");
 
         // Get the restart job JCL
-        const restartJobJcl: string = await this.getRestartJclForJob(session, stepname, job);
-
-        // Re-submit restart job JCL
-        // TODO: use additional parms from IRestartParms
-        return SubmitJobs.submitJcl(session, restartJobJcl);
+        return this.getRestartJclForJob(session, stepname, job);
     }
 
 }
