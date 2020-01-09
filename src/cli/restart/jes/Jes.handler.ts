@@ -15,8 +15,20 @@ import { RestartJobs } from "../../../api/RestartJobs";
 import { IRestartParms } from "../../../api/doc/input/IRestartParms";
 import { isNullOrUndefined } from "util";
 
+/**
+ * "zos-restart-jobs restart jes" command handler. Restart a job by Job ID starting form specific step.
+ * @export
+ * @class JesHandler
+ * @implements {ICommandHandler}
+ */
 export default class JesHandler implements ICommandHandler {
 
+    /**
+     * Command handler process - invoked by the command processor to handle the "zos-restart-jobs restart jes"
+     * @param {IHandlerParameters} commandParameters - command handler parameters
+     * @returns {Promise<void>} - fulfilled when the command completes successfully OR rejected with imperative error
+     * @memberof JesHandler
+     */
     public async process(commandParameters: IHandlerParameters): Promise<void> {
 
         // Force yargs `jobid` and `stepname` parameters to be a string

@@ -46,7 +46,7 @@ export interface IRestartParms {
 
     /**
      * Task status object used by CLI handlers to create progress bars
-     * for certain job submit requests
+     * for certain job restart requests
      * Optional
      */
     task?: ITaskWithStatus;
