@@ -1,6 +1,6 @@
 # IBM z/OS Jobs Restart Plug-in for Zowe CLI
 
-The IBM z/OS Jobs Restart Plug-in for Zowe CLI lets you extend Zowe CLI to restart specified jobs.
+The IBM z/OS Jobs Restart Plug-in for Zowe CLI lets you extend Zowe CLI to allow restart operation for z/OS jobs.
 
 - [How the plug-in works](#how-the-plug-in-works)
 - [Known issues](#known-issues)
@@ -13,25 +13,24 @@ The IBM z/OS Jobs Restart Plug-in for Zowe CLI lets you extend Zowe CLI to resta
 
 ## How the plug-in works
 
-IBM z/OS Jobs Restart Plug-in for Zowe CLI being installed allows failed z/OS jobs identified by Job ID to be restarted from a specific step within that job.
+IBM z/OS Jobs Restart Plug-in for Zowe CLI being installed allows failed z/OS jobs identified by Job ID to be restarted from a specific job step.
 
 ### Implementation details
 
-Since z/OSMF REST API has no special requests to execute a job restart, it was decided to re-use other REST API functionality in order to allow soft of emulation of job restart capabilities.
+Since z/OSMF REST API has no special requests to execute a job restart, other REST API functionality is re-used in order to offer a soft of emulation of job restart capabilities.
 
 The steps are:
 
 - Check if the status of a job with `jobid` is failed (return code is any, but `CC 0000`)
 - Retrieve a JCL for specified `jobid` from job spool data set `JESJCL`
-- Modify received JCL with `RESTART=(stepname)` parameter for `JOB` statement.
-  `RESTART` parameter allows to start a job execution from a specific point (step), which is specified by the `stepname` command argument
+- Modify a `JOB` statement of received JCL with `RESTART=(stepname)` parameter, which allows to start a job execution from a certain point (step) specified by `stepname`
 - Re-submit modified JCL as a new job (new `jobid` is returned)
 
-Because the restart operation is implemented basically by using the job submit API at the end of all steps, it also supports the specific options that already existing `zowe zos-jobs submit` provides, such as: awaiting for a job completion, save spool files to the disk and related. See details in [Command format](#command-format)
+Because the restart command is implemented by using job submit API as final step, it also supports specific options that already existing `zowe zos-jobs submit` command provides, such as: awaiting for a job completion, save spool files to the disk and related. See details in [Command format](#command-format)
 
 ### Command format
 
-In general, the command format is:
+In general, the usage of a command is as follows:
 
 ```
 zowe zos-restart-jobs restart jes <jobid> <stepname> [options]
@@ -73,7 +72,7 @@ Where:
 
 ### Examples
 
-For example, to restart job with job ID JOB03456 from step STEP002, the following command is used:
+To restart a job with job ID JOB03456 from step STEP002, the following command is used:
 
 ```
 zowe zos-restart-jobs restart jes JOB03456 STEP002
@@ -162,7 +161,7 @@ zowe profiles set zosmf --help
 
 ## Running tests
 
-You can perform the following types of tests on the IBM CICS plug-in:
+You can perform the following types of tests on the IBM Jobs Restart Plug-in:
 
 - Unit
 - Integration
