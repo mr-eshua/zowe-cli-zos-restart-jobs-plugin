@@ -17,6 +17,7 @@ describe("imperative config", () => {
     // changes to the configuration document are intended.
     it("should not have changed", () => {
         const config: IImperativeConfig = require("../src/imperative");
+        expect(config).toBeDefined();
         expect(config.pluginHealthCheck).toContain("healthCheck.Handler");
         delete config.pluginHealthCheck;
         expect(config).toMatchSnapshot();
