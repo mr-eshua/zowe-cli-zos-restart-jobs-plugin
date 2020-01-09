@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsc --pretty && npm run checkTestsCompile",
-    "checkTestsCompile": "echo \"Checking that test source compiles...\" && tsc --project __tests__/test-tsconfig.json --noEmit ",
+    "checkTestsCompile": "echo \"Checking that test source compiles...\" && tsc --project __tests__/tsconfig.json --noEmit",
     "prebuild": "npm run clean && npm run lint && echo Using TypeScript && tsc --version",
     "clean": "rimraf lib",
     "watch": "tsc --pretty --watch",
