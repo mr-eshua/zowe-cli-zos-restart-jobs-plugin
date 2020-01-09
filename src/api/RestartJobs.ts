@@ -13,8 +13,23 @@ import { IJob, GetJobs, SubmitJobs, JOB_STATUS } from "@zowe/cli";
 import { AbstractSession, ImperativeError, ImperativeExpect } from "@zowe/imperative";
 import { IRestartParms } from "./doc/input/IRestartParms";
 
+/**
+ * Class of restart jobs APIs for usage within the CLI and programmatically from node scripts
+ * @export
+ * @class RestartJobs
+ */
 export class RestartJobs {
 
+    /**
+     * Get JCL for job and modify it for a restart
+     * @static
+     * @param {AbstractSession} session - z/OSMF connection info
+     * @param {string} stepname - name of a step, which to restart from
+     * @param {IJob} job - job to get JCL for
+     * @throws {ImperativeError} - throws an error if specified step name is not found in JCL
+     * @returns {Promise<string>} - promise that resolves to a string, which contains JCL modified for a restart
+     * @memberof RestartJobs
+     */
     public static async getRestartJclForJob(session: AbstractSession, stepname: string, job: IJob) {
         const jobJcl: string = await GetJobs.getJclForJob(session, job);
 
@@ -68,8 +83,19 @@ export class RestartJobs {
         }
 
         return newJclLines.join("\n");
+
     }
 
+    /**
+     * Restart a job from a specific step
+     * @static
+     * @param {AbstractSession} session - z/OSMF connection info
+     * @param {string} jobid - job id to be translated into parms object
+     * @param {string} stepname - name of a step, which to restart from
+     * @throws {ImperativeError} - throws an error if job is in ACTIVE state and return code is not "CC 0000"
+     * @returns {Promise<IJob>} - promise that resolves to an IJob document with details about the restarted job
+     * @memberof RestartJobs
+     */
     public static async restartFailedJob(session: AbstractSession, jobid: string, stepname: string) {
 
         // Get the restart job JCL
@@ -77,8 +103,21 @@ export class RestartJobs {
 
         // Re-submit restart job JCL
         return SubmitJobs.submitJcl(session, restartJobJcl);
+
     }
 
+    /**
+     * Restart a job from a specific step
+     * @static
+     * @param {AbstractSession} session - z/OSMF connection info
+     * @param {string} jobid - job id to be translated into parms object
+     * @param {string} stepname - name of a step, which to restart from
+     * @param {IRestartParms} parms - special object with restart parameters (see for details)
+     * @throws {ImperativeError} - throws an error if job is in ACTIVE state and return code is not "CC 0000"
+     * @returns {Promise<IJob | ISpoolFile[]>} - promise that resolves to an IJob document with details about the restarted job or
+                                                 into a list of ISpoolFile documents with spool data set content
+     * @memberof RestartJobs
+     */
     public static async restartFailedJobWithParms(session: AbstractSession, jobid: string, stepname: string,
                                                   parms: IRestartParms) {
 
@@ -98,9 +137,19 @@ export class RestartJobs {
 
         // Re-submit restart job JCL
         return SubmitJobs.submitJclString(session, restartJobJcl, submitParms);
+
     }
 
-
+    /**
+     * Check if job is failed and return its JCL prepared for restart
+     * @static
+     * @param {AbstractSession} session - z/OSMF connection info
+     * @param {string} jobid - job id to be translated into parms object
+     * @param {string} stepname - a name of a step, which to restart from
+     * @throws {ImperativeError} - throws an error if job is in ACTIVE state and return code is not "CC 0000"
+     * @returns {Promise<IJob>} - Promise that resolves to an IJob document with details about the restarted job
+     * @memberof RestartJobs
+     */
     public static async getFailedJobRestartJcl(session: AbstractSession, jobid: string, stepname: string) {
         const errorMessagePrefix: string =
             `Restarting job with id ${jobid} on ${session.ISession.hostname}:${session.ISession.port} failed: `;
@@ -115,6 +164,7 @@ export class RestartJobs {
 
         // Get the restart job JCL
         return this.getRestartJclForJob(session, stepname, job);
+
     }
 
 }
