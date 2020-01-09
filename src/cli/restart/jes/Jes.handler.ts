@@ -100,6 +100,7 @@ export default class JesHandler implements ICommandHandler {
         }
         commandParameters.response.progress.endBar();
         commandParameters.response.data.setMessage(`Restarted JCL with jobid "${jobid}" starting from step "${stepname}"`);
+
     }
 
 }
