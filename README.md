@@ -26,7 +26,7 @@ The steps are:
 - Modify a `JOB` statement of received JCL with `RESTART=(stepname)` parameter, which allows to start a job execution from a certain point (step) specified by `stepname`
 - Re-submit modified JCL as a new job (new `jobid` is returned)
 
-Because the restart command is implemented by using job submit API as final step, it also supports specific options that already existing `zowe zos-jobs submit` command provides, such as: awaiting for a job completion, save spool files to the disk and related. See details in [Command format](#command-format)
+Because the restart command is implemented by using job submit API as a final step, it also supports specific options that already existing `zowe zos-jobs submit` command provides, such as: awaiting for a job completion, save spool files to the disk and related. See details in [Command format](#command-format)
 
 ### Command format
 
@@ -38,8 +38,8 @@ zowe zos-restart-jobs restart jes <jobid> <stepname> [options]
 
 Where:
 
-- `<jobid>` - ID of a job (e.g. JOB01234)
-- `<stepname>` - ID of a step within a job (e.g. STEP001)
+- `<jobid>` - ID of a job (e.g. `JOB01234`)
+- `<stepname>` - ID of a step within a job (e.g. `STEP001`)
 - `[options]` -  optional parameters like:
   - z/OSMF Connection options
   - Profile options
@@ -72,7 +72,7 @@ Where:
 
 ### Examples
 
-To restart a job with job ID JOB03456 from step STEP002, the following command is used:
+To restart a job with job ID `JOB03456` from step `STEP002`, the following command is used:
 
 ```
 zowe zos-restart-jobs restart jes JOB03456 STEP002
@@ -80,7 +80,7 @@ zowe zos-restart-jobs restart jes JOB03456 STEP002
 
 ## Known issues
 
-- A job that already used RESTART= parameter cannot be restarted again (#11)
+- A job that already used `RESTART=` parameter cannot be restarted again ([#11](https://github.com/mr-eshua/zowe-cli-zos-restart-jobs-plugin/issues/11))
 
 ## Software requirements
 
