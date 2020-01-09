@@ -16,7 +16,7 @@ import { IRestartParms } from "../../../api/doc/input/IRestartParms";
 import { isNullOrUndefined } from "util";
 
 /**
- * "zos-restart-jobs restart jes" command handler. Restart a job by Job ID starting from specific step.
+ * "zos-restart-jobs restart jes" command handler. Restart a job by Job ID from a specific step.
  * @export
  * @class JesHandler
  * @implements {ICommandHandler}
