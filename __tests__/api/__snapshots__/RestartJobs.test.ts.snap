@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RestartJobs tests getRestartJclForJob tests should error when no step name found in jcl 1`] = `[Error: Step name STEP03 is not found in a job with jobid JOB04541]`;

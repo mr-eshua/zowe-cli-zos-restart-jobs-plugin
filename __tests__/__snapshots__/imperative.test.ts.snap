@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`imperative config should not have changed 1`] = `
+Object {
+  "commandModuleGlobs": Array [
+    "**/cli/*/*.definition!(.d).*s",
+  ],
+  "name": "zos-restart-jobs",
+  "pluginSummary": "Zowe CLI restart z/OS jobs plug-in",
+  "productDisplayName": "Zowe CLI z/OS Jobs Restart Plug-in",
+  "rootCommandDescription": "Plugin, which allows to restart z/OS jobs",
+}
+`;
