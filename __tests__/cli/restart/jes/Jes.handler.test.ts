@@ -155,6 +155,9 @@ describe("JesHandler tests", () => {
 
         await handler.process(commandParameters);
 
+        expect(createBasicZosmfSessionFromArgumentsSpy).toHaveBeenCalledTimes(1);
+        expect(createBasicZosmfSessionFromArgumentsSpy).toHaveBeenCalledWith(commandParameters.arguments);
+
         expect(restartFailedJobWithParmsSpy).toHaveBeenCalledTimes(1);
         expect(restartFailedJobWithParmsSpy).toHaveBeenCalledWith(
             testSession,
