@@ -9,10 +9,10 @@
 *
 */
 
-import { RestartJobs } from "../../src/api/RestartJobs";
-import { IRestartParms } from "../../src/api/doc/input/IRestartParms";
 import { GetJobs, SubmitJobs, IJob } from "@zowe/cli";
 import { Session, TaskProgress, TaskStage } from "@zowe/imperative";
+import { RestartJobs } from "../../src/api/RestartJobs";
+import { IRestartParms } from "../../src/api/doc/input/IRestartParms";
 
 describe("RestartJobs tests", () => {
 
