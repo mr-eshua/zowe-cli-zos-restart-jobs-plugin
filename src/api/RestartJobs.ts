@@ -87,6 +87,34 @@ export class RestartJobs {
     }
 
     /**
+     * Check if job is failed and return its JCL prepared for restart
+     * @static
+     * @param {AbstractSession} session - z/OSMF connection info
+     * @param {string} jobid - job id to be translated into parms object
+     * @param {string} stepname - a name of a step, which to restart from
+     * @throws {ImperativeError} - throws an error if job is in ACTIVE state and return code is not "CC 0000"
+     * @returns {Promise<IJob>} - Promise that resolves to an IJob document with details about the restarted job
+     * @memberof RestartJobs
+     */
+    public static async getFailedJobRestartJcl(session: AbstractSession, jobid: string, stepname: string) {
+
+        // Get the job details
+        const job: IJob = await GetJobs.getJob(session, jobid);
+
+        const errorMessagePrefix: string =
+            `Restarting job with id ${jobid} on ${session.ISession.hostname}:${session.ISession.port} failed: `;
+
+        ImperativeExpect.toBeEqual(job.status, JOB_STATUS.OUTPUT,
+                                      errorMessagePrefix + "Job status is ACTIVE, OUTPUT is required");
+        ImperativeExpect.toNotBeEqual(job.retcode, "CC 0000",
+                                      errorMessagePrefix + "Job status is successful, failed is required");
+
+        // Get the restart job JCL
+        return this.getRestartJclForJob(session, stepname, job);
+
+    }
+
+    /**
      * Restart a job from a specific step
      * @static
      * @param {AbstractSession} session - z/OSMF connection info
@@ -137,33 +165,6 @@ export class RestartJobs {
 
         // Re-submit restart job JCL
         return SubmitJobs.submitJclString(session, restartJobJcl, submitParms);
-
-    }
-
-    /**
-     * Check if job is failed and return its JCL prepared for restart
-     * @static
-     * @param {AbstractSession} session - z/OSMF connection info
-     * @param {string} jobid - job id to be translated into parms object
-     * @param {string} stepname - a name of a step, which to restart from
-     * @throws {ImperativeError} - throws an error if job is in ACTIVE state and return code is not "CC 0000"
-     * @returns {Promise<IJob>} - Promise that resolves to an IJob document with details about the restarted job
-     * @memberof RestartJobs
-     */
-    public static async getFailedJobRestartJcl(session: AbstractSession, jobid: string, stepname: string) {
-        const errorMessagePrefix: string =
-            `Restarting job with id ${jobid} on ${session.ISession.hostname}:${session.ISession.port} failed: `;
-
-        // Get the job details
-        const job: IJob = await GetJobs.getJob(session, jobid);
-
-        ImperativeExpect.toBeEqual(job.status, JOB_STATUS.OUTPUT,
-                                      errorMessagePrefix + "Job status is ACTIVE, OUTPUT is required");
-        ImperativeExpect.toNotBeEqual(job.retcode, "CC 0000",
-                                      errorMessagePrefix + "Job status is successful, failed is required");
-
-        // Get the restart job JCL
-        return this.getRestartJclForJob(session, stepname, job);
 
     }
 

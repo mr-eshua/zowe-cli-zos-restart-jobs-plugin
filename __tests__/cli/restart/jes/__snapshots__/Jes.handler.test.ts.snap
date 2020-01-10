@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JesHandler tests should call the restartFailedJobWithParms API 1`] = `
+Object {
+  "task": Object {
+    "percentComplete": 10,
+    "stageName": 0,
+    "statusMessage": "Restarting job",
+  },
+}
+`;
+
+exports[`JesHandler tests should call the restartFailedJobWithParms API 2`] = `
+Object {
+  "fields": Array [
+    "jobid",
+    "retcode",
+    "jobname",
+    "status",
+  ],
+  "format": "object",
+  "output": Object {
+    "class": "A",
+    "files-url": "https://127.0.0.1:443/zosmf/restjobs/jobs/J0004565SVSCJES2D74D1C38.......%3A/files",
+    "job-correlator": "J0004565SVSCJES2D74D1C38.......:",
+    "jobid": "JOB04541",
+    "jobname": "TESTJOB",
+    "owner": "",
+    "phase": 128,
+    "phase-name": "Job is active in input processing",
+    "retcode": null,
+    "status": "INPUT",
+    "subsystem": "JES2",
+    "type": "JOB",
+    "url": "https://127.0.0.1:443/zosmf/restjobs/jobs/J0004565SVSCJES2D74D1C38.......%3A",
+  },
+}
+`;
+
+exports[`JesHandler tests should call the restartFailedJobWithParms API 3`] = `
+Object {
+  "class": "A",
+  "files-url": "https://127.0.0.1:443/zosmf/restjobs/jobs/J0004565SVSCJES2D74D1C38.......%3A/files",
+  "job-correlator": "J0004565SVSCJES2D74D1C38.......:",
+  "jobid": "JOB04541",
+  "jobname": "TESTJOB",
+  "owner": "",
+  "phase": 128,
+  "phase-name": "Job is active in input processing",
+  "retcode": null,
+  "status": "INPUT",
+  "subsystem": "JES2",
+  "type": "JOB",
+  "url": "https://127.0.0.1:443/zosmf/restjobs/jobs/J0004565SVSCJES2D74D1C38.......%3A",
+}
+`;
+
+exports[`JesHandler tests should call the restartFailedJobWithParms API 4`] = `"Successfully downloaded output to .//JOB04541"`;
+
+exports[`JesHandler tests should call the restartFailedJobWithParms API 5`] = `"Restarted JCL with jobid \\"JOB04541\\" starting from step \\"STEP02\\""`;
