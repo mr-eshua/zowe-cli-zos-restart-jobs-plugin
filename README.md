@@ -3,7 +3,6 @@
 The IBM z/OS Jobs Restart Plug-in for Zowe CLI lets you extend Zowe CLI to allow restart operation for z/OS jobs.
 
 - [How the plug-in works](#how-the-plug-in-works)
-- [Known issues](#known-issues)
 - [Software requirements](#software-requirements)
 - [Installing](#installing)
 - [Building from source](#building-from-source)
