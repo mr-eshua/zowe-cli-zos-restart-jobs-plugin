@@ -17,7 +17,7 @@ IBM z/OS Jobs Restart Plug-in for Zowe CLI being installed allows failed z/OS jo
 
 ### Implementation details
 
-Since z/OSMF REST API has no special requests to execute a job restart, other REST API functionality is re-used in order to offer a soft of emulation of job restart capabilities.
+Since z/OSMF REST API has no special requests to execute a job restart, other REST API functionality is re-used in order to offer a sort of emulation of job restart capabilities.
 
 The steps are:
 
