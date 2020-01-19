@@ -76,7 +76,7 @@ describe("RestartJobs tests", () => {
                                    "//STEP02   EXEC PGM=IEFBR14";
 
             const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',CLASS=A,\n" +
-                                           "//             RESTART=(STEP02)\n" +
+                                           "// RESTART=(STEP02)\n" +
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
@@ -96,7 +96,111 @@ describe("RestartJobs tests", () => {
                                    "//STEP02   EXEC PGM=IEFBR14";
 
             const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',\n" +
+                                           "//             CLASS=A,\n" +
+                                           "// RESTART=(STEP02)\n" +
+                                           "//STEP01   EXEC PGM=XYZ\n" +
+                                           "//STEP02   EXEC PGM=IEFBR14";
+
+            getJclForJobSpy.mockImplementation(() => jobJcl);
+
+            const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
+
+            expect(getJclForJobSpy).toHaveBeenCalledWith(dummySession, job);
+            expect(resultJobJcl).toEqual(modifiedJobJcl);
+        });
+
+        it("should success with single line JOB statement and RESTART= already specified there", async () => {
+
+            const jobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',RESTART=(STEP01)                       JOB04541\n" +
+                                   "//STEP01   EXEC PGM=XYZ\n" +
+                                   "//STEP02   EXEC PGM=IEFBR14";
+
+            const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',RESTART=(STEP02)\n" +
+                                           "//STEP01   EXEC PGM=XYZ\n" +
+                                           "//STEP02   EXEC PGM=IEFBR14";
+
+            getJclForJobSpy.mockImplementation(() => jobJcl);
+
+            const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
+
+            expect(getJclForJobSpy).toHaveBeenCalledWith(dummySession, job);
+            expect(resultJobJcl).toEqual(modifiedJobJcl);
+        });
+
+        it("should success with multi line JOB statement and RESTART= already specified there", async () => {
+
+            const jobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',RESTART=(STEP01),                      JOB04541\n" +
+                                   "//             CLASS=A\n" +
+                                   "//STEP01   EXEC PGM=XYZ\n" +
+                                   "//STEP02   EXEC PGM=IEFBR14";
+
+            const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',RESTART=(STEP02),\n" +
+                                           "//             CLASS=A\n" +
+                                           "//STEP01   EXEC PGM=XYZ\n" +
+                                           "//STEP02   EXEC PGM=IEFBR14";
+
+            getJclForJobSpy.mockImplementation(() => jobJcl);
+
+            const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
+
+            expect(getJclForJobSpy).toHaveBeenCalledWith(dummySession, job);
+            expect(resultJobJcl).toEqual(modifiedJobJcl);
+        });
+
+        it("should success with multi line JOB statement and RESTART= already specified on other line", async () => {
+
+            const jobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',                                       JOB04541\n" +
+                                   "//             RESTART=(STEP01),\n" +
+                                   "//             CLASS=A\n" +
+                                   "//STEP01   EXEC PGM=XYZ\n" +
+                                   "//STEP02   EXEC PGM=IEFBR14";
+
+            const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',\n" +
                                            "//             RESTART=(STEP02),\n" +
+                                           "//             CLASS=A\n" +
+                                           "//STEP01   EXEC PGM=XYZ\n" +
+                                           "//STEP02   EXEC PGM=IEFBR14";
+
+            getJclForJobSpy.mockImplementation(() => jobJcl);
+
+            const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
+
+            expect(getJclForJobSpy).toHaveBeenCalledWith(dummySession, job);
+            expect(resultJobJcl).toEqual(modifiedJobJcl);
+        });
+
+        it("should success with multi line JOB statement and RESTART= already specified on other line with extra param", async () => {
+
+            const jobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',                                       JOB04541\n" +
+                                   "//             CLASS=A,RESTART=(STEP01),\n" +
+                                   "//             CLASS=A\n" +
+                                   "//STEP01   EXEC PGM=XYZ\n" +
+                                   "//STEP02   EXEC PGM=IEFBR14";
+
+            const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',\n" +
+                                           "//             CLASS=A,RESTART=(STEP02),\n" +
+                                           "//             CLASS=A\n" +
+                                           "//STEP01   EXEC PGM=XYZ\n" +
+                                           "//STEP02   EXEC PGM=IEFBR14";
+
+            getJclForJobSpy.mockImplementation(() => jobJcl);
+
+            const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
+
+            expect(getJclForJobSpy).toHaveBeenCalledWith(dummySession, job);
+            expect(resultJobJcl).toEqual(modifiedJobJcl);
+        });
+
+        it("should success with multi line JOB statement and RESTART= already specified on other line with extra params", async () => {
+
+            const jobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',                                       JOB04541\n" +
+                                   "//             CLASS=A,RESTART=(STEP01),CLASS=A,\n" +
+                                   "//             CLASS=A\n" +
+                                   "//STEP01   EXEC PGM=XYZ\n" +
+                                   "//STEP02   EXEC PGM=IEFBR14";
+
+            const modifiedJobJcl: string = "//TESTJOB JOB (ACCTINFO),'user',\n" +
+                                           "//             CLASS=A,RESTART=(STEP02),CLASS=A,\n" +
                                            "//             CLASS=A\n" +
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";

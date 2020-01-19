@@ -78,10 +78,6 @@ To restart a job with job ID `JOB03456` from step `STEP002`, the following comma
 zowe zos-restart-jobs restart jes JOB03456 STEP002
 ```
 
-## Known issues
-
-- A job that already used `RESTART=` parameter cannot be restarted again ([#11](https://github.com/mr-eshua/zowe-cli-zos-restart-jobs-plugin/issues/11))
-
 ## Software requirements
 
 Before you install and use the plug-in make sure you have installed Zowe CLI on your computer.

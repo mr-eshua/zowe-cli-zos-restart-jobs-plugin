@@ -34,46 +34,58 @@ export class RestartJobs {
         const jobJcl: string = await GetJobs.getJclForJob(session, job);
 
         const newJclLines: string[] = [];
-        let restartParamLine: string = `//             RESTART=(${stepname.toUpperCase()})`;
+        let restartParamLine: string = `// RESTART=(${stepname.toUpperCase()})`;
         let isStepFound: boolean = false;
+        let isRestartParmFound: boolean = false;
 
         for (const line of jobJcl.split("\n")) {
+
+            // Transform to upper case to check for substrings
             const upperCasedLine = line.toUpperCase();
 
-            // TODO: handle the case where RESTART= param already specified
+            // Line actually to be added in new JCL
+            let lineToAdd: string = line.toString();
 
             // Do not try to process comment lines
             if (!upperCasedLine.startsWith("//*")) {
 
                 if (upperCasedLine.indexOf("JOB") >= 0) {
+                    // Remove redundant `jobid` at the end of JOB statement
+                    lineToAdd = line.replace(job.jobid, "");
+                }
 
-                    // Remove redundant `jobid` at the end of JOB statement and odd white spaces
-                    let modifiedJobLine: string = line.replace(job.jobid, "").trim();
+                if (!isRestartParmFound) {
+                    // Trim white spaces just in case to be able to check last line symbol
+                    lineToAdd = lineToAdd.trim();
 
-                    // Check if JOB statement is multi-line
-                    if (modifiedJobLine.endsWith(",")) {
-                        restartParamLine += ",";
+                    // If already specified RESTART= parm is found -> replace it with new step name
+                    // and stop searching
+                    if (lineToAdd.match(/RESTART=\(\S*\)/)) {
+                        lineToAdd = lineToAdd.replace(/RESTART=\(\S*\)/, `RESTART=(${stepname})`);
+                        isRestartParmFound = true;
                     }
-                    else {
-                        modifiedJobLine += ",";
-                    }
 
-                    // Push RESTART= param always on the second line after JOB statement
-                    // This converts JOB statement to multi-line if it was not OR
-                    // just add another line to already multi-lined JOB statement
-                    newJclLines.push(modifiedJobLine);
-                    newJclLines.push(restartParamLine);
-                    continue;
+                    // If no RESTART= parm is found inline and it is no continuation to next line ->
+                    // add continuation and RESTART= parm on next line, then stop searching
+                    if (!isRestartParmFound && !lineToAdd.endsWith(",")) {
+                        lineToAdd += ",";
+                        newJclLines.push(lineToAdd);
+                        newJclLines.push(restartParamLine);
+                        isRestartParmFound = true;
+                        continue;
+                    }
                 }
 
                 // Check if specified step name really exists in JCL
-                if (upperCasedLine.indexOf("EXEC") >= 0 &&
-                        upperCasedLine.startsWith(`//${stepname.toUpperCase()}`)) {
-                    isStepFound = true;
+                if (upperCasedLine.indexOf("EXEC") >= 0) {
+                    if (upperCasedLine.startsWith(`//${stepname.toUpperCase()}`)) {
+                        isStepFound = true;
+                    }
                 }
             }
 
-            newJclLines.push(line);
+            newJclLines.push(lineToAdd);
+
         }
 
         if (!isStepFound) {
