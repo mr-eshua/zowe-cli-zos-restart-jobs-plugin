@@ -2,6 +2,7 @@ node_modules/
 lib/
 .vscode
 .idea
+.DS_Store
 results/
 __results__/
 __tests__/__results__/
