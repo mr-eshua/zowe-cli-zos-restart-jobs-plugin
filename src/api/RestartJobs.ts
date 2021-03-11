@@ -34,7 +34,7 @@ export class RestartJobs {
         const jobJcl: string = await GetJobs.getJclForJob(session, job);
 
         const newJclLines: string[] = [];
-        let restartParamLine: string = `// RESTART=(${stepname.toUpperCase()})`;
+        const restartParamLine: string = `// RESTART=(${stepname.toUpperCase()})`;
         let isStepFound: boolean = false;
         let isRestartParmFound: boolean = false;
 
@@ -155,7 +155,7 @@ export class RestartJobs {
      * @param {IRestartParms} parms - special object with restart parameters (see for details)
      * @throws {ImperativeError} - throws an error if job is in ACTIVE state and return code is not "CC 0000"
      * @returns {Promise<IJob | ISpoolFile[]>} - promise that resolves to an IJob document with details about the restarted job or
-                                                 into a list of ISpoolFile documents with spool data set content
+     *                                           into a list of ISpoolFile documents with spool data set content
      * @memberof RestartJobs
      */
     public static async restartFailedJobWithParms(session: AbstractSession, jobid: string, stepname: string,

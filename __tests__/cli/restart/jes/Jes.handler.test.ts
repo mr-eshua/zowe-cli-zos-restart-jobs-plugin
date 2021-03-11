@@ -37,12 +37,11 @@ PROFILE_MAP.set(
 const PROFILES: CommandProfiles = new CommandProfiles(PROFILE_MAP);
 const DEFAULT_PARAMETERS: IHandlerParameters = {
     arguments: {$0: "", _: []}, // Please provide arguments later on
-    positionals: [],
     response: {
         data: {
             setMessage: jest.fn((setMsgArgs) => {
                 expect(setMsgArgs).toMatchSnapshot();
-            }),
+            }) as any,
             setObj: jest.fn((setObjArgs) => {
                 expect(setObjArgs).toMatchSnapshot();
             }),
@@ -51,10 +50,10 @@ const DEFAULT_PARAMETERS: IHandlerParameters = {
         console: {
             log: jest.fn((logs) => {
                 expect(logs.toString()).toMatchSnapshot();
-            }),
+            }) as any,
             error: jest.fn((errors) => {
                 expect(errors.toString()).toMatchSnapshot();
-            }),
+            }) as any,
             errorHeader: jest.fn(() => undefined)
         },
         progress: {
@@ -128,7 +127,7 @@ describe("JesHandler tests", () => {
         createBasicZosmfSessionFromArgumentsSpy.mockImplementation(() => testSession);
 
         restartFailedJobWithParmsSpy.mockClear();
-        restartFailedJobWithParmsSpy.mockImplementation(() => defaultReturn);
+        restartFailedJobWithParmsSpy.mockImplementation(() => Promise.resolve(defaultReturn));
 
     });
 
