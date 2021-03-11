@@ -80,7 +80,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job);
 
@@ -101,7 +101,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
 
@@ -119,7 +119,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
 
@@ -139,7 +139,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
 
@@ -161,7 +161,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
 
@@ -183,7 +183,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
 
@@ -205,7 +205,7 @@ describe("RestartJobs tests", () => {
                                            "//STEP01   EXEC PGM=XYZ\n" +
                                            "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             const resultJobJcl: string = await RestartJobs.getRestartJclForJob(dummySession, stepname, job as IJob);
 
@@ -219,7 +219,7 @@ describe("RestartJobs tests", () => {
                                    "//STEP01   EXEC PGM=XYZ\n" +
                                    "//STEP02   EXEC PGM=IEFBR14";
 
-            getJclForJobSpy.mockImplementation(() => jobJcl);
+            getJclForJobSpy.mockImplementation(() => Promise.resolve(jobJcl));
 
             try {
                 await RestartJobs.getRestartJclForJob(dummySession, "STEP03", job as IJob);
@@ -248,8 +248,8 @@ describe("RestartJobs tests", () => {
 
         it("should success", async () => {
 
-            getJobSpy.mockImplementation(() => job);
-            getRestartJclForJobSpy.mockImplementation(() => restartJobJcl);
+            getJobSpy.mockImplementation(() => Promise.resolve(job));
+            getRestartJclForJobSpy.mockImplementation(() => Promise.resolve(restartJobJcl));
 
             const resultJobJcl: string = await RestartJobs.getFailedJobRestartJcl(dummySession, jobid, stepname);
 
@@ -275,8 +275,8 @@ describe("RestartJobs tests", () => {
 
         it("should success", async () => {
 
-            getFailedJobRestartJclSpy.mockImplementation(() => restartJobJcl);
-            submitJclSpy.mockImplementation(() => restartJob);
+            getFailedJobRestartJclSpy.mockImplementation(() => Promise.resolve(restartJobJcl));
+            submitJclSpy.mockImplementation(() => Promise.resolve(restartJob));
 
             const resultJob = await RestartJobs.restartFailedJob(dummySession, jobid, stepname);
 
@@ -325,8 +325,8 @@ describe("RestartJobs tests", () => {
                 task: restartParms.task
             }
 
-            getFailedJobRestartJclSpy.mockImplementation(() => restartJobJcl);
-            submitJclStringSpy.mockImplementation(() => restartJob);
+            getFailedJobRestartJclSpy.mockImplementation(() => Promise.resolve(restartJobJcl));
+            submitJclStringSpy.mockImplementation(() => Promise.resolve(restartJob));
 
             const resultJob = await RestartJobs.restartFailedJobWithParms(dummySession, jobid, stepname, restartParms);
 
