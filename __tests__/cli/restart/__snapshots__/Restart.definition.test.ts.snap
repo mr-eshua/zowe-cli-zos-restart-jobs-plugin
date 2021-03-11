@@ -21,7 +21,7 @@ Object {
           "description": "The z/OSMF server host name.",
           "group": "Zosmf Connection Options",
           "name": "host",
-          "required": false,
+          "required": true,
           "type": "string",
         },
         Object {
@@ -41,7 +41,7 @@ Object {
           "description": "Mainframe (z/OSMF) user name, which can be the same as your TSO login.",
           "group": "Zosmf Connection Options",
           "name": "user",
-          "required": false,
+          "required": true,
           "type": "string",
         },
         Object {
@@ -52,7 +52,7 @@ Object {
           "description": "Mainframe (z/OSMF) password, which can be the same as your TSO password.",
           "group": "Zosmf Connection Options",
           "name": "password",
-          "required": false,
+          "required": true,
           "type": "string",
         },
         Object {
@@ -72,20 +72,6 @@ Object {
           "description": "The base path for your API mediation layer instance. Specify this option to prepend the base path to all z/OSMF resources when making REST requests. Do not specify this option if you are not using an API mediation layer.",
           "group": "Zosmf Connection Options",
           "name": "base-path",
-          "type": "string",
-        },
-        Object {
-          "allowableValues": Object {
-            "caseSensitive": false,
-            "values": Array [
-              "http",
-              "https",
-            ],
-          },
-          "defaultValue": "https",
-          "description": "The protocol used (HTTP or HTTPS)",
-          "group": "Zosmf Connection Options",
-          "name": "protocol",
           "type": "string",
         },
       ],
